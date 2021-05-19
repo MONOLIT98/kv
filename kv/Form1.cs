@@ -76,18 +76,10 @@ namespace kv
         private void Form1_Load(object sender, EventArgs e)
         {
             List<Data> data = new List<Data>();
-            JsonTextReader reader = new JsonTextReader(new StreamReader("data.json"));
-            reader.SupportMultipleContent = true;
-            while (true)
-            {
-                if (!reader.Read())
-                {
-                    break;
-                }
-                JsonSerializer serializer = new JsonSerializer();
-                Data d_t = serializer.Deserialize<Data>(reader);
-                data.Add(d_t);
-            }
+            StreamReader sr = new StreamReader("data.json");
+            string s = sr.ReadToEnd();
+            sr.Close();
+            data = JsonConvert.DeserializeObject<List<Data>>(s);
             for (int i = 0; i < data.Count; i++)
                 listView1.Columns.Add(data[i].tld, 100, HorizontalAlignment.Center);
 
