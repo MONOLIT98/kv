@@ -16,7 +16,6 @@ namespace kv
 {
     public partial class Form1 : Form
     {
-
         List<Data> data = new List<Data>();
 
         public Form1()
@@ -115,7 +114,14 @@ namespace kv
 
         private void buttonEdit_Click(object sender, EventArgs e)
         {
-
+            if (listView1.SelectedIndices.Count > 0)
+            {
+                int selected = listView1.SelectedIndices[0];                
+                FormEdit fe = new FormEdit(selected);
+                fe.ShowDialog();
+                listView1.Items.Clear();
+                AddToList();
+            }
         }
     }
 }

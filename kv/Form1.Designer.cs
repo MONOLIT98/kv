@@ -207,13 +207,13 @@
         private System.Windows.Forms.TextBox descript;
         private System.Windows.Forms.TextBox link;
         private System.Windows.Forms.TextBox direct;
-        private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ColumnHeader columnTld;
         private System.Windows.Forms.ColumnHeader columnTime;
         private System.Windows.Forms.ListView listView2;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button buttonDelete;
         private System.Windows.Forms.Button buttonEdit;
+        public System.Windows.Forms.ListView listView1;
     }
 }
 
