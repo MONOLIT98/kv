@@ -108,6 +108,7 @@ namespace kv
                 //data = data.Select(x => x).Where(x => x.tld != item.tld && x.time != item.time).ToList();
                 File.WriteAllText("data.json", string.Empty);
                 File.AppendAllText("data.json", JsonConvert.SerializeObject(list));
+                data = list;
                 listView1.Items[selected].Remove();
             }
         }
