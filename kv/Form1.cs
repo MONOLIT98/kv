@@ -16,39 +16,14 @@ namespace kv
 {
     public partial class Form1 : Form
     {
-        
+
+        List<Data> data = new List<Data>();
+
         public Form1()
         {
             InitializeComponent();
-        }
-
-        public class Data 
-        {
-            public string tld { get; set; }
-            public string time { get; set; }
-            public string spon { get; set; }
-            public string desc{ get; set; }
-            public string lnk { get; set; }
-            public string dir { get; set; }
-
-            public Data() { }
-
-            public Data(string Tld, string Time, string Spon, string Desc, string Link, string Dir)
-            {
-                tld = Tld;
-                time = Time;
-                spon = Spon;
-                desc = Desc;
-                lnk = Link;
-                dir = Dir;
-            }
-        }
-
-
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
+            //listView1.AutoResizeColumns(ColumnHeaderAutoResizeStyle.ColumnContent);
+            //listView2.AutoResizeColumns(ColumnHeaderAutoResizeStyle.HeaderSize);
         }
 
         private void savelog_Click(object sender, EventArgs e)
@@ -56,10 +31,12 @@ namespace kv
             Save_Events();
         }
 
-        void Save_Events()
+        void Save_Events() //Сериализация
         {
-            List<Data> data = new List<Data>();
-
+            if(data == null)
+                data = new List<Data>();
+            else if(data.Count > 0)
+                data.AddRange(DeserializeJson("data.json"));
             data.AddRange(new Data[]
             {
                 new Data(title.Text, time.Text, spon.Text, descript.Text, link.Text, direct.Text)
@@ -68,22 +45,77 @@ namespace kv
             File.AppendAllText("data.json", JsonConvert.SerializeObject(data));
         }
 
-        private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+        private List<Data> DeserializeJson(string path) //Десериализация
         {
+            StreamReader sr = new StreamReader(path);
+            string file = sr.ReadToEnd();
+            sr.Close();
+            data = JsonConvert.DeserializeObject<List<Data>>(file);
+            return data;
+        }
 
+        private void AddToList() //Добавление из json в ListView
+        {
+            data = DeserializeJson("data.json");
+            if (data != null)
+                for (int i = 0; i < data.Count; i++)
+                {
+                    var lv1 = new ListViewItem(new string[] { data[i].tld, data[i].time });
+                    listView1.Items.Add(lv1);
+                }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            List<Data> data = new List<Data>();
-            StreamReader sr = new StreamReader("data.json");
-            string s = sr.ReadToEnd();
-            sr.Close();
-            data = JsonConvert.DeserializeObject<List<Data>>(s);
-            for (int i = 0; i < data.Count; i++)
-                listView1.Columns.Add(data[i].tld, 100, HorizontalAlignment.Center);
-
+            AddToList();
+            
             // listView1.Columns.Add("Aa", 100, HorizontalAlignment.Center);
+        }
+
+        private void listView1_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e) // Показывает инфу про выбранный элемент
+        {
+            listView2.Items.Clear();
+            if (listView1.SelectedIndices.Count > 0)
+            {
+                int selected = listView1.SelectedIndices[0];
+                var list = listView1.Items[selected].SubItems;
+                var sel = data.Select(x => x).Where(x => x.tld == list[0].Text && x.time == list[1].Text).ToList()[0];
+                listView2.Items.AddRange(new ListViewItem[] {
+                    new ListViewItem(sel.spon),
+                    new ListViewItem(sel.desc),
+                    new ListViewItem(sel.lnk),
+                    new ListViewItem(sel.dir) });
+            }            
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e) //Удаление 
+        {
+            if(listView1.SelectedIndices.Count > 0)
+            {
+                int selected = listView1.SelectedIndices[0];
+                Data item = new Data(
+                    listView1.Items[selected].SubItems[0].Text,
+                    listView1.Items[selected].SubItems[1].Text,
+                    listView2.Items[0].Text,
+                    listView2.Items[1].Text,
+                    listView2.Items[2].Text,
+                    listView2.Items[3].Text);
+                var list = new List<Data>();
+                foreach (var el in data)
+                {
+                    if (el.tld != item.tld && el.time != item.time)
+                        list.Add(el);
+                }
+                //data = data.Select(x => x).Where(x => x.tld != item.tld && x.time != item.time).ToList();
+                File.WriteAllText("data.json", string.Empty);
+                File.AppendAllText("data.json", JsonConvert.SerializeObject(list));
+                listView1.Items[selected].Remove();
+            }
+        }
+
+        private void buttonEdit_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
