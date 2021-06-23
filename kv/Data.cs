@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace kv
 {
-    class Data
+    public class Data
     {
         public string tld { get; set; }
         public string time { get; set; }

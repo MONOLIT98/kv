@@ -17,6 +17,7 @@ namespace kv
     public partial class Form1 : Form
     {
         List<Data> data = new List<Data>();
+        string path = Environment.CurrentDirectory + @"\..\..\Documents\data.json";
 
         public Form1()
         {
@@ -35,13 +36,13 @@ namespace kv
             if(data == null)
                 data = new List<Data>();
             else if(data.Count > 0)
-                data.AddRange(DeserializeJson("data.json"));
+                data.AddRange(DeserializeJson(path));
             data.AddRange(new Data[]
             {
                 new Data(title.Text, time.Text, spon.Text, descript.Text, link.Text, direct.Text)
             });
-            File.WriteAllText("data.json", string.Empty);
-            File.AppendAllText("data.json", JsonConvert.SerializeObject(data));
+            File.WriteAllText(path, string.Empty);
+            File.AppendAllText(path, JsonConvert.SerializeObject(data));
         }
 
         private List<Data> DeserializeJson(string path) //Десериализация
@@ -55,7 +56,7 @@ namespace kv
 
         private void AddToList() //Добавление из json в ListView
         {
-            data = DeserializeJson("data.json");
+            data = DeserializeJson(path);
             if (data != null)
                 for (int i = 0; i < data.Count; i++)
                 {
@@ -106,8 +107,8 @@ namespace kv
                         list.Add(el);
                 }
                 //data = data.Select(x => x).Where(x => x.tld != item.tld && x.time != item.time).ToList();
-                File.WriteAllText("data.json", string.Empty);
-                File.AppendAllText("data.json", JsonConvert.SerializeObject(list));
+                File.WriteAllText(path, string.Empty);
+                File.AppendAllText(path, JsonConvert.SerializeObject(list));
                 data = list;
                 listView1.Items[selected].Remove();
             }
